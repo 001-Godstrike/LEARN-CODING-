@@ -1,0 +1,105 @@
+*{
+  margin: 0;
+    padding: 0;
+}
+
+body {
+    background: whitesmoke;
+}
+
+header{
+    background: #0000002e;
+    padding: 10px;
+    border-bottom: 3px solid green;
+}
+
+h2{
+  margin-left: 20px;
+}
+
+.container{
+  
+}
+
+.branding{
+    display: flex;
+    text-transform: uppercase;
+}
+
+header img{
+    width: 80px;
+}
+
+header p{
+    color: black;
+    font-size: 20px;
+    margin-top: 27px;
+}
+
+header span{
+    color: orange;
+}
+
+header li{
+    display: inline;
+    float: left;
+    padding: 5px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+header a{
+  text-decoration: none;
+  color: whitesmoke;
+}
+
+.stats{
+  display: flex;
+  text-align: center;
+  justify-items: space-between;
+  margin-left: 20px;
+  gap: 20px;
+}
+
+.record{
+  height: 50px;
+  width: 320px;
+  border: 2px solid green;
+  text-align: center;
+  font-size: 15px;
+  font-weight: bolder;
+  border-radius: 10px;
+  background: white;
+  ;
+}
+
+.record:hover{
+  background: green;
+}
+
+.line{
+  text-align: center;
+}
+
+h3{
+  text-align: center;
+}
+
+.btn{
+  background: gold;
+  color: black;
+  margin-left: 55px;
+  align-self: center;
+  text-align: center;
+  border: none;
+  border-radius: 25px;
+  width: 70%;
+  height: 50px;
+  font-size: 20px;
+  font-weight: bolder;
+}
+
+.btn:hover{
+  background: 
+  linear-gradient(to bottom left, red, gold, green);
+}

@@ -1,0 +1,178 @@
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>  
+    <link rel="stylesheet" href="signup.css">  
+    <link rel="icon" href="logo.png">  
+    <title>Get Started</title>  
+</head>  
+<body>  <div class="container">  
+      
+    <form id="signupForm">  
+    <br>  
+    <span class="left">  
+        <a href="admin.html">⚙️</a>  
+    </span>  
+
+    
+      
+    <span id="branding">  
+        <h2>Learn Coding</h2>  
+    </span>  
+      
+    <span id="branding">  
+        <h3>Become <strong>a pro web developer</strong> </h3>  
+    </span>  
+    <br><br><br>  
+     
+    <input type="text" name="name" id="name" placeholder="👤 Full Name:  e.g John Doe" required>  
+    <br><br>  
+      
+    <input type="text" name="username" id="username" placeholder="👤 Username:" required>  
+    <br><br>  
+
+    <input type="tel" name="number" id="number" placeholder="📞 Phone Number:  Eg. 09185678656" required>  
+    <br><br>  
+
+    <input type="email" name="email" id="email" placeholder="@ Email:" required>  
+    <br><br>  
+    <label for="accesskey">  
+
+    <input type="text" name="access_key" id="access_key" placeholder="🔑 Access key: Fill in your access key here" required>  
+    <br>  
+    <p>Don't have an Access Key?<a href="https://wa.me/qr/WEGE3RPUOCSMC1">Click here</a></p>  
+
+    <input type="text" name="referral" id="referral" placeholder="👥 Referral Username(optional):">  
+    <br><br>  
+
+    <input type="password" name="password" id="password" placeholder="🔐Password:" required>  
+    <br><br><br>  
+          
+    <button type="submit">Sign Up</button>  
+    <br><br>  
+      
+    <span id="branding">  
+      
+    <p>Already have an account?  
+    <a href="login.html">Login</a></p>  
+    <br><br><br>  
+      
+ <div class="course">  
+         <a class="btn" href="Signup.html">  
+ Start Course Now
+
+ </a>  
+     </div>  
+ <br><br>  <p class="tc">By clicking on the Sign Up button you agree to our <a href="terms.html">terms</a> and <a href="conditions.html">conditions</a> and <a href="policy.html">policy</a></p>  
+    <footer>  
+        <strong>Learn Coding Copyright &copy 2025. All rights reserved </strong>  
+    </footer>  
+    <br>  
+          
+    </span>  
+      
+</form>  
+      
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  // -------------------------------
+  // Firebase Config
+  // -------------------------------
+  const firebaseConfig = {
+    apiKey: "AIzaSyBXTuVO59i1WrHmNE_a0C6V0qKfE7LBjz8",
+    authDomain: "learn-coding-001.firebaseapp.com",
+    projectId: "learn-coding-001",
+    storageBucket: "learn-coding-001.firebasestorage.app",
+    messagingSenderId: "851725910647",
+    appId: "1:851725910647:web:5a26d418453455d1a93c72",
+    measurementId: "G-P9XJBTJXBK"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // -------------------------------
+  // Supabase Config
+  // -------------------------------
+  const SUPABASE_URL = "https://yqghekdepvplvfcdaxxd.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxZ2hla2RlcHZwbHZmY2RheHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzNzU2NTQsImV4cCI6MjA3Mzk1MTY1NH0.Rf-QsYyxcjwczbPn7GP3RO5PNjb5qNiNtIiVWYMj9Ts";
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // -------------------------------
+  // Signup Form Listener
+  // -------------------------------
+  const signupForm = document.getElementById("signupForm");
+
+  signupForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = signupForm.name.value.trim();
+    const username = signupForm.username.value.trim();
+    const number = signupForm.number.value.trim();
+    const email = signupForm.email.value.trim();
+    const password = signupForm.password.value.trim();
+    const referral = signupForm.referral.value.trim();
+    const accessKeyInput = signupForm.access_key.value.trim();
+
+    try {
+      // 1️⃣ Check access key in Supabase
+      let { data: keyData, error: keyError } = await supabase
+        .from("key")
+        .select("*")
+        .ilike("access_key", accessKeyInput)
+        .eq("key_used", false)
+        .limit(1)
+        .single();
+
+      if (keyError || !keyData) {
+        alert("❌ Invalid or already used access key.");
+        return;
+      }
+
+      // 2️⃣ Create Firebase user
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = userCred.user.uid;
+
+      // 3️⃣ Add user info to Supabase
+      let { error: insertError } = await supabase
+        .from("users")
+        .insert([{
+          uid,
+          name,
+          username,
+          number,
+          email,
+          password, // ⚠️ still plain text
+          access_key: accessKeyInput,
+          referral,
+          role: keyData.role || "user",
+          created_at: new Date().toISOString()
+        }]);
+
+      if (insertError) throw insertError;
+
+      // 4️⃣ Mark key as used
+      let { error: updateError } = await supabase
+        .from("key")
+        .update({ key_used: true })
+        .eq("id", keyData.id);
+
+      if (updateError) throw updateError;
+
+      alert(`🚀 Signup successful! You are registered as ${keyData.role}`);
+      window.location.href = "login.html";
+
+    } catch (err) {
+      console.error("Signup error:", err);
+      alert("⚠️ Something went wrong. Check console.");
+    }
+  });
+</script>
+
+
+</body>  
+</html>  

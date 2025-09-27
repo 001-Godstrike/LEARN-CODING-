@@ -1,0 +1,56 @@
+body {
+   margin: 0 auto;
+   background: seagreen;
+}
+
+.lesson{
+    background: white;
+    margin: 0 auto;
+    width: 90%;
+    border-radius: 20px;
+    padding: 10px;
+    overflow: scroll;
+}
+
+code{
+    color: green;
+}
+
+h1{
+    color: red;
+    text-align: center;
+}
+
+h2{
+    color: blue;
+}
+
+a{
+    color: black;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.video{
+    margin: 0 auto;
+    
+    background: 
+    linear-gradient(to right, gold, white);
+    border: 2px solid seagreen;
+    border-radius: 25px;
+    width: 90%;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 0;
+}
+
+.video:hover{
+    background: 
+    linear-gradient(to right, green, orange);
+    color: white;
+}
+
+img{
+    width: 300px;
+}

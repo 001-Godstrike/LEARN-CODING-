@@ -1,0 +1,118 @@
+body {
+    background: rgba(20,20,30,0.8);
+}
+
+.container{
+    margin: 0 auto;
+    background: #f4ffaa;
+    width: 93%;
+    border-radius: 20px;
+    box-shadow: 0 0 15px gold;
+    border: 2px solid gold;
+}
+
+
+form{
+    text-align: center;
+}
+
+input{
+    width: 85%;
+    height: 40px;
+    border-radius: 25px;
+    border: 2px solid gold;
+    color: gold;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 40px;
+}
+
+input:hover{
+    background: cyan;
+    color: black;
+    font-size : 17px;
+    font-weight: bold;
+}
+
+button{
+    width: 80%;
+    margin: 0 auto;
+    height: 50px;
+    border: none;
+    border-radius: 25px;
+    background: gold;
+    color: green;
+    text-align: center;
+    font-size: 25px;
+    font-weight: 95px;
+}
+
+button:hover{
+    background: rgba(20,20,30,0.8);
+    color: whitesmoke;
+}
+
+a{
+    color: gold;
+    text-decoration: none;
+    position: left;
+}
+
+.tc{
+    font-weight: bolder;
+    font-size: 11px;
+}
+
+.tc a{
+    color: blue;
+    
+}
+
+footer{
+    background: #f4ffaa;
+    color: green;
+    height: 60px;
+    padding-top: 20px;
+    border-top: 2px solid gold;
+    border-bottom: 2px solid gold;
+}
+
+.left{
+    margin-left: -230px;
+    background: #fff100;
+    border-radius: 50%;
+}
+
+h2{
+    color: black;
+}
+
+h3{
+     color: black;
+}
+
+p{
+    color: black;
+}
+
+.btn{
+    display: block;
+    width: 50%;
+    border: 2px solid green;
+    border-radius: 25px;
+    margin: 0 auto;
+    padding: 15px 40px;
+    background: gold;
+    font-size: 16px;
+    text-align: center;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.7;
+}
+
+.btn:hover{
+    background: 
+      linear-gradient(to bottom left, blue , red , green , yellow , purple , grey , orange );
+    color: cyan;
+}

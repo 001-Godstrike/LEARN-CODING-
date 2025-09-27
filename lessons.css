@@ -1,0 +1,27 @@
+body{
+    
+}
+
+.div{
+    margin: 0 auto;
+}
+
+.lesson{
+    background: 
+    linear-gradient(to right, gold, white);
+    margin: 0 auto;
+    width: 98%;
+    border: 2px solid gold;
+    border-radius: 25px;
+    text-align: center;
+    padding: 20px 0;
+    
+}
+
+a{
+    text-decoration: none;
+    color: black;
+    font-size: 17px;
+    font-weight: bold;
+    text-transform: uppercase;
+}

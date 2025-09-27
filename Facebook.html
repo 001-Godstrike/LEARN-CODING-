@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<title>Discussion Area 🚀</title>
+<link rel="icon" href="logo.png">
+<style>
+  body { font-family: Arial, sans-serif; background: whitesmoke; margin: 20px; }
+  h1, h2 { text-align: center; color: gold;}
+  #postBox { margin-bottom: 20px; }
+  textarea, input[type="file"] { width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box; color: gold}
+  button { padding: 8px 12px; cursor: pointer; margin-top: 5px; margin-right: 5px; }
+  .post { background: #fff; border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 6px; }
+  .comments { margin-top: 10px; padding-left: 10px; }
+  .comment { font-size: 14px; background: cyan; padding: 8px; margin-bottom: 5px; border-radius: 3px; }
+  img, video { max-width: 300px; display: block; margin-top: 10px; border-radius: 6px; }
+  .meta { color: whitesmoke; font-size: 13px; margin-top: 6px; }
+</style>
+</head>
+<body>
+  
+  <a href="dashboard.html">Back to Dashboard</a>
+
+<h1>Discussion Area 🚀</h1>
+
+<!-- Post Box -->
+<div id="postBox">
+  <textarea id="postContent" placeholder="What's on your mind?"></textarea>
+  <input type="file" id="mediaInput" accept="image/*,video/*" />
+  <button id="postBtn">Post</button>
+</div>
+
+<h2>Posts</h2>
+<div id="feed">Loading feed…</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+// ---- Supabase (with your credentials already filled) ----
+const SUPABASE_URL = "https://yqghekdepvplvfcdaxxd.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxZ2hla2RlcHZwbHZmY2RheHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzNzU2NTQsImV4cCI6MjA3Mzk1MTY1NH0.Rf-QsYyxcjwczbPn7GP3RO5PNjb5qNiNtIiVWYMj9Ts";
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ---- Cloudinary ----
+const CLOUDINARY_CLOUD_NAME = "deqsfeved";
+const CLOUDINARY_UPLOAD_PRESET = "Learn Coding";
+const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`;
+
+// ---- DOM ----
+const feedEl = document.getElementById('feed');
+const postContentEl = document.getElementById('postContent');
+const mediaInputEl = document.getElementById('mediaInput');
+const postBtn = document.getElementById('postBtn');
+
+// ---- Logged-in User ----
+const userEmail = localStorage.getItem('userEmail');
+if (!userEmail) {
+  alert("⚠️ You must log in first.");
+  window.location.href = "login.html";
+  throw new Error("Not logged in");
+}
+
+// Fetch user details
+async function fetchUserByEmail(email) {
+  const { data, error } = await supabase
+    .from('users')
+    .select('uid, username, email')
+    .eq('email', email)
+    .single();
+  if (error) {
+    console.warn("User fetch error:", error.message);
+    return null;
+  }
+  return data;
+}
+
+// Upload media to Cloudinary
+async function uploadMedia(file) {
+  if (!file) return "";
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+  const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: fd });
+  const data = await res.json();
+  return data.secure_url || "";
+}
+
+// ---- Create Post ----
+postBtn.addEventListener('click', async () => {
+  const content = postContentEl.value.trim();
+  const file = mediaInputEl.files[0];
+  if (!content && !file) return alert("Type something or select media first!");
+
+  const user = await fetchUserByEmail(userEmail);
+  const uid = user?.uid || "guest";
+  const username = user?.username || userEmail.split("@")[0];
+
+  let media_url = "";
+  if (file) {
+    media_url = await uploadMedia(file);
+    if (!media_url) return;
+  }
+
+  const newPost = {
+    post_id: Date.now().toString(),
+    uid,
+    username,
+    email: userEmail,
+    content,
+    media_url,
+    status: "approved",
+    timestamp: new Date().toISOString()
+  };
+
+  const { error } = await supabase.from('posts').insert([newPost]);
+  if (error) return alert("❌ Failed to save post: " + error.message);
+
+  postContentEl.value = "";
+  mediaInputEl.value = "";
+  loadFeed(); // refresh in background
+});
+
+// ---- Like Post ----
+window.likePost = async function(post_id) {
+  const user = await fetchUserByEmail(userEmail);
+  const uid = user?.uid || "guest";
+  const username = user?.username || userEmail.split("@")[0];
+
+  const newLike = {
+    like_id: Date.now().toString(),
+    post_id,
+    uid,
+    email: userEmail,
+    username,
+    timestamp: new Date().toISOString()
+  };
+
+  const { error } = await supabase.from('likes').insert([newLike]);
+  if (error) return alert("❌ Failed to like post: " + error.message);
+
+  loadFeed();
+};
+
+// ---- Comment ----
+window.submitComment = async function(post_id) {
+  const textarea = document.getElementById(`commentContent-${post_id}`);
+  if (!textarea) return;
+  const content = textarea.value.trim();
+  if (!content) return;
+
+  const user = await fetchUserByEmail(userEmail);
+  const uid = user?.uid || "guest";
+  const username = user?.username || userEmail.split("@")[0];
+
+  const newComment = {
+    comment_id: Date.now().toString(),
+    post_id,
+    uid,
+    email: userEmail,
+    username,
+    content,
+    timestamp: new Date().toISOString()
+  };
+
+  const { error } = await supabase.from('comments').insert([newComment]);
+  if (error) return alert("❌ Failed to submit comment: " + error.message);
+
+  textarea.value = "";
+  loadFeed();
+};
+
+// ---- Load Feed ----
+async function loadFeed() {
+  const { data: posts, error: postErr } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('status', 'approved')
+    .order('timestamp', { ascending: false });
+  if (postErr) return feedEl.innerHTML = "❌ Failed to load posts.";
+
+  const [{ data: comments }, { data: likes }] = await Promise.all([
+    supabase.from('comments').select('*'),
+    supabase.from('likes').select('*')
+  ]);
+
+  feedEl.innerHTML = "";
+  if (!posts || posts.length === 0) {
+    feedEl.innerHTML = "<p>No posts yet — be the first!</p>";
+    return;
+  }
+
+  posts.forEach(post => {
+    const postLikes = likes?.filter(l => l.post_id === post.post_id) || [];
+    const postComments = comments?.filter(c => c.post_id === post.post_id) || [];
+
+    const div = document.createElement("div");
+    div.className = "post";
+
+    const mediaHtml = post.media_url
+      ? (post.media_url.endsWith(".mp4")
+          ? `<video src="${post.media_url}" controls></video>`
+          : `<img src="${post.media_url}"/>`)
+      : "";
+
+    div.innerHTML = `
+      <p><strong>${post.username || post.email}</strong>: ${post.content}</p>
+      ${mediaHtml}
+      <div class="meta">${new Date(post.timestamp).toLocaleString()}</div>
+      <button onclick="likePost('${post.post_id}')">👍 Like (${postLikes.length})</button>
+      <div class="comments">
+        ${postComments.map(c => `<div class="comment"><b>${c.username || c.email}</b>: ${c.content}</div>`).join("")}
+        <textarea id="commentContent-${post.post_id}" placeholder="Write a comment..."></textarea>
+        <button onclick="submitComment('${post.post_id}')">Send</button>
+      </div>
+    `;
+
+    feedEl.appendChild(div);
+  });
+}
+
+// ---- Initial Load ----
+loadFeed();
+</script>
+</body>
+</html>

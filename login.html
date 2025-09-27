@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="signup.css">
+    <link rel="icon" href="logo.png">
+    <title>Login</title>
+</head>
+<body>
+    
+    <div class="container">
+        <form id="loginForm">
+            <br>
+            <span id="branding">
+                <h2>LOGIN</h2>
+            </span>
+            <br><br>
+
+            <input type="email" name="email" id="email" placeholder="@ Email: e.g abc@example.com" required>
+            <br><br>
+              
+            <input type="password" name="password" id="password" placeholder="🔑 Input Password:" required>
+            <p>Forgotten Password? <a href="https://wa.me/message/XRDBCWFYT4LWK1">Remind me</a></p>
+            
+            <br><br>
+            <button type="submit">Login</button>
+            <br><br>
+            
+            <span id="branding">
+                <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+                <br><br>
+                <footer>
+                    <strong>Learn Coding Copyright &copy; 2025. All rights reserved</strong>
+                </footer>
+                <br>
+            </span>
+        </form>
+    </div>
+    
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+  // -------------------------------
+  // Firebase Config
+  // -------------------------------
+  const firebaseConfig = {
+    apiKey: "AIzaSyBXTuVO59i1WrHmNE_a0C6V0qKfE7LBjz8",
+    authDomain: "learn-coding-001.firebaseapp.com",
+    projectId: "learn-coding-001",
+    storageBucket: "learn-coding-001.firebasestorage.app",
+    messagingSenderId: "851725910647",
+    appId: "1:851725910647:web:5a26d418453455d1a93c72",
+    measurementId: "G-P9XJBTJXBK"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // -------------------------------
+  // Supabase Config
+  // -------------------------------
+  const SUPABASE_URL = "https://yqghekdepvplvfcdaxxd.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxZ2hla2RlcHZwbHZmY2RheHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzNzU2NTQsImV4cCI6MjA3Mzk1MTY1NH0.Rf-QsYyxcjwczbPn7GP3RO5PNjb5qNiNtIiVWYMj9Ts";
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // -------------------------------
+  // Login Handler
+  // -------------------------------
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    try {
+      // 1️⃣ Firebase login
+      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      const uid = userCred.user.uid;
+
+      // 2️⃣ Fetch role + username from Supabase (by email)
+      let { data, error } = await supabase
+        .from("users")
+        .select("role, name, username, uid")
+        .eq("email", email)
+        .single();
+
+      if (error || !data) {
+        alert("⚠️ Could not fetch user data. Defaulting to dashboard.");
+        window.location.href = "dashboard.html";
+        return;
+      }
+
+      const role = data.role || "user";
+      const name = data.name || data.username || email;
+      const supaUid = data.uid || uid; // fallback to Firebase UID
+
+      // 3️⃣ Save in localStorage
+      localStorage.setItem("userRole", role);
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("username", data.username || "");
+      localStorage.setItem("uid", supaUid);
+
+      // 4️⃣ Redirect with greeting
+      if (role === "admin") {
+        alert("✅ Welcome back Admin " + name + "!");
+        window.location.href = "facebook.html";
+      } else {
+        alert("✅ Login successful! Welcome " + name);
+        window.location.href = "dashboard.html";
+      }
+
+    } catch (err) {
+      alert("❌ Login failed: " + err.message);
+    }
+  });
+</script>
+  
+  
+</body>
+</html>

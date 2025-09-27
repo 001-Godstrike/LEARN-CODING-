@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="lessons.css">
+  <link rel="icon" href="logo.png">
+  <title>Get Started</title>
+</head>
+<body>
+
+  <h1>Lessons Outline</h1>
+
+  <div class="div">
+    <br><br><br>
+    <div class="lesson">
+      <a href="basics.html" data-lesson-id="lesson1" data-stages="3">Introduction to the tools used in website creation</a>
+    </div>
+    <br>
+    <div class="lesson">
+      <a href="basics.html" data-lesson-id="lesson2" data-stages="4">Learning the basics of website Creation</a>
+    </div>
+    <br>
+    <div class="lesson">
+      <a href="paragraphs.html" data-lesson-id="lesson3" data-stages="3">Adding paragraphs</a>
+    </div>
+    <br>
+    <div class="lesson">
+      <a href="link.html" data-lesson-id="lesson4" data-stages="4">Adding links to your website</a>
+    </div>
+    <br>
+    <div class="lesson">
+      <a href="img.html" data-lesson-id="lesson5" data-stages="3">Adding images to your website</a>
+    </div>
+    <br>
+    <div class="lesson">
+      <a href="list.html" data-lesson-id="lesson6" data-stages="4">Lists</a>
+    </div>
+    <br>
+    <div class="lesson">
+      <a href="listscontd.html" data-lesson-id="lesson7" data-stages="3">Lists contd.</a>
+    </div>
+    <br>
+    <div class="lesson">
+      <a href="div.html" data-lesson-id="lesson8" data-stages="4">Div</a>
+    </div>
+    <br>
+    <div class="lesson">
+      <a href="span.html" data-lesson-id="lesson9" data-stages="3">Span</a>
+    </div>
+    <br>
+    <div class="lesson">
+      <a href="form.html" data-lesson-id="lesson10" data-stages="4">Form</a>
+    </div>
+    <br>
+    <div class="lesson">
+      <a href="input.html" data-lesson-id="lesson11" data-stages="3">Input</a>
+    </div>
+    <br>
+    <div class="lesson">
+      <a href="button.html" data-lesson-id="lesson12" data-stages="4">Button</a>
+    </div>
+    <br>
+    <div class="lesson">
+      <a href="table.html" data-lesson-id="lesson13" data-stages="3">Table</a>
+    </div>
+    <br>
+  </div>
+
+  <script>
+    // Load saved progress from localStorage (simulating JSON storage)
+    const progress = JSON.parse(localStorage.getItem("lessonProgress")) || {};
+
+    // Handle lesson click
+    document.querySelectorAll(".lesson a").forEach(link => {
+      link.addEventListener("click", () => {
+        const lessonId = link.dataset.lessonId;
+        const totalStages = parseInt(link.dataset.stages);
+
+        if (!progress[lessonId]) {
+          progress[lessonId] = { completedStages: 0, totalStages };
+        }
+
+        // Start first stage timer
+        startLessonProgress(lessonId, totalStages);
+        localStorage.setItem("lessonProgress", JSON.stringify(progress));
+      });
+    });
+
+    // Function to handle progression by timer
+    function startLessonProgress(lessonId, totalStages) {
+      let stage = progress[lessonId].completedStages;
+
+      if (stage >= totalStages) return; // already finished
+
+      // Example timer: 10 seconds per stage (change to 15 mins in real use)
+      const timer = setInterval(() => {
+        stage++;
+        progress[lessonId].completedStages = stage;
+        localStorage.setItem("lessonProgress", JSON.stringify(progress));
+        console.log(`Lesson ${lessonId}: Stage ${stage}/${totalStages} completed`);
+
+        if (stage >= totalStages) {
+          clearInterval(timer);
+          console.log(`Lesson ${lessonId} fully completed ✅`);
+        }
+      }, 10000); // 10 sec per stage
+    }
+  </script>
+
+</body>
+</html>

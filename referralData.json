@@ -1,0 +1,28 @@
+{
+  "users": {
+    "kingemmy@example.com": {
+      "refBalance": 125.75,
+      "yesterday": 20.00,
+      "today": 15.50,
+      "avgBalance": 18.25,
+      "goal": 200.00,
+      "bonus": 5.00,
+      "avgWeekly": 90.00,
+      "avgMonthly": 350.00,
+      "highestWeekly": 120.00,
+      "progression": 62.87
+    },
+    "amponge905@gmail.com": {
+      "refBalance": 100.00,
+      "yesterday": 5.00,
+      "today": 2.50,
+      "avgBalance": 3.75,
+      "goal": 100.00,
+      "bonus": 1.00,
+      "avgWeekly": 25.00,
+      "avgMonthly": 100.00,
+      "highestWeekly": 30.00,
+      "progression": 50.00
+    }
+  }
+}
