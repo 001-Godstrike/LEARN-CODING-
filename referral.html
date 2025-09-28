@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" href="logo.png">
 <title>Referral Dashboard</title>
 <style>
   body {
@@ -87,6 +88,58 @@
     .referral p { font-size: 28px; }
     .stat-card span { font-size: 16px; }
   }
+  
+  input {
+    width: 90%;
+    max-width: 400px;
+    padding: 8px;
+    font-size: 13px;
+    border-radius: 8px;
+    border: 1px solid gold;
+    resize: none;
+    display: block;
+    margin: 0 auto;
+  }
+
+  button.copy-btn {
+    display: block;
+    margin: 10px auto 20px auto;
+    padding: 8px 16px;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+  }
+
+  button.copy-btn:hover {
+    background: #3730a3;
+  }
+
+  /* Popup message */
+  .popup {
+    visibility: hidden;
+    background: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 16px;
+    position: fixed;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.4s, visibility 0.4s;
+    z-index: 1000;
+  }
+
+  .popup.show {
+    visibility: visible;
+    opacity: 1;
+  }
 </style>
 </head>
 <body>
@@ -95,6 +148,14 @@
   <h3>Referral Balance</h3>
   <p id="refBalance">0.00</p>
 </div>
+
+<br>
+<input type="text" id="refLink" readonly>
+<button class="copy-btn" onclick="copyReferral()">Copy Link</button>
+
+<div id="popup" class="popup">Copied!</div>
+
+<br>
 
 <div class="stats">
   <div class="stat-card">
@@ -145,8 +206,7 @@
 </div>
 
 <script>
-  // Simulate logged-in user
-  const loggedInEmail = localStorage.getItem("userEmail");
+  const loggedInEmail = localStorage.getItem("userEmail") || "demo@example.com";
 
   async function loadReferralData() {
     try {
@@ -169,12 +229,16 @@
         {id: "progression", key:"progression"}
       ];
 
+      // Show referral link
+      if(userData.link) {
+        document.getElementById("refLink").value = userData.link;
+      }
+
       function animateValue(id, start, end, duration) {
         end = end ?? 0;
         let range = end - start;
         let current = start;
-        const increment = end > start ? 0.5 : -0.5;
-        const stepTime = Math.abs(Math.floor(duration / (range || 1)));
+        let increment = range / (duration/50); // dynamic increment
         const obj = document.getElementById(id);
         const timer = setInterval(() => {
           current += increment;
@@ -183,7 +247,7 @@
             clearInterval(timer);
           }
           obj.textContent = id==="progression"? current.toFixed(2)+"%" : current.toFixed(2);
-        }, stepTime);
+        }, 50);
       }
 
       function animateProgressBar(id, value, total) {
@@ -194,7 +258,6 @@
         setTimeout(() => { bar.style.width = percentage + "%"; }, 200);
       }
 
-      // Update all fields dynamically
       fields.forEach(field => {
         animateValue(field.id, 0, userData[field.key] ?? 0, 1000);
       });
@@ -207,15 +270,25 @@
       animateProgressBar("progressWeekly", userData.avgWeekly, userData.refBalance);
       animateProgressBar("progressMonthly", userData.avgMonthly, userData.refBalance);
       animateProgressBar("progressHighest", userData.highestWeekly, userData.refBalance);
-      animateProgressBar("progressProgression", userData.progression);
+      animateProgressBar("progressProgression", userData.progression, 100);
     } catch(err) {
       console.error(err);
       alert("⚠️ Failed to load referral data!");
     }
   }
 
+  // Copy link + popup
+  function copyReferral() {
+    const refLink = document.getElementById("refLink").value;
+    navigator.clipboard.writeText(refLink).then(() => {
+      let popup = document.getElementById("popup");
+      popup.classList.add("show");
+      setTimeout(() => popup.classList.remove("show"), 2000);
+    });
+  }
+
   window.onload = loadReferralData;
 </script>
 
 </body>
-</html>
+    </html>
